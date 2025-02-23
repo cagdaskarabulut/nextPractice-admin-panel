@@ -1,0 +1,20 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model YellcordUser {
+  id         Int      @id @default(autoincrement())
+  username   String
+  email      String
+  password   String
+  avatar_url String?
+  created_at DateTime @default(now())
+  is_online  Boolean
+
+  @@map("yellcord_users")
+} 
