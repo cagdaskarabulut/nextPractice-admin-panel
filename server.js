@@ -1,29 +1,57 @@
 const express = require("express");
+const cors = require("cors");
 const { PrismaClient } = require("@prisma/client");
 const app = express();
 const prisma = new PrismaClient();
 
-app.get("/", async (req, res) => {
-  const users = await prisma.yellcordUser.findMany({
-    select: {
-      id: true,
-      username: true,
-      email: true,
-      password: true,
-      avatar_url: true,
-      created_at: true,
-      is_online: true,
-    },
-  });
+app.use(cors());
+app.use(express.json());
 
-  res.send(`
-    <h1>Kullanıcı Listesi</h1>
-    <ul>
-      ${users
-        .map((user) => `<li>${user.username} - ${user.email}</li>`)
-        .join("")}
-    </ul>
-  `);
+// Get all users
+app.get("/api/yellcord_users", async (req, res) => {
+  try {
+    const users = await prisma.yellcordUser.findMany();
+    res.json(users);
+  } catch (error) {
+    res.status(500).json({ error: "Veritabanından veriler çekilemedi." });
+  }
+});
+
+// Create a new user
+app.post("/api/yellcord_users", async (req, res) => {
+  try {
+    const newUser = await prisma.yellcordUser.create({
+      data: req.body,
+    });
+    res.json(newUser);
+  } catch (error) {
+    res.status(500).json({ error: "Kullanıcı oluşturulamadı." });
+  }
+});
+
+// Update a user
+app.put("/api/yellcord_users/:id", async (req, res) => {
+  try {
+    const updatedUser = await prisma.yellcordUser.update({
+      where: { id: parseInt(req.params.id) },
+      data: req.body,
+    });
+    res.json(updatedUser);
+  } catch (error) {
+    res.status(500).json({ error: "Kullanıcı güncellenemedi." });
+  }
+});
+
+// Delete a user
+app.delete("/api/yellcord_users/:id", async (req, res) => {
+  try {
+    const deletedUser = await prisma.yellcordUser.delete({
+      where: { id: parseInt(req.params.id) },
+    });
+    res.json(deletedUser);
+  } catch (error) {
+    res.status(500).json({ error: "Kullanıcı silinemedi." });
+  }
 });
 
 app.listen(3000, () => {

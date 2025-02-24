@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import Image from "next/image";
+import Link from "next/link";
 
 const prisma = new PrismaClient();
 
@@ -18,6 +19,7 @@ export default async function Home() {
   return (
     <div>
       <h1>Kullanıcı Listesi</h1>
+      <Link href="/admin">Admin Paneline Git</Link>
       <table>
         <thead>
           <tr>
